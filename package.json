@@ -1,0 +1,31 @@
+{
+  "name": "service-app",
+  "version": "1.0.0",
+  "description": "service and long running tasks",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard && mocha 'src/test/**/*.js'",
+    "test-single": "mocha $1",
+    "service:version": "node src/commands/service-version.js",
+    "project:info": "node src/commands/show-project.js",
+    "project:install": "./src/bash_scripts/sql-batch.sh src/sql/install",
+    "project:migrate": "./src/bash_scripts/sql-batch.sh $1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@ssh.dev.azure.com:v3/AlliedGlobalbpo/Seguros%20Universales/SERVICE-App"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "mocha": "6.1.4",
+    "standard": "12.0.1"
+  },
+  "dependencies": {
+    "mustache": "3.0.1",
+    "mysql": "2.17.1",
+    "node-cron": "2.0.3",
+    "nodemailer": "6.2.1",
+    "promise-mysql": "3.3.1"
+  }
+}

@@ -1,0 +1,26 @@
+USE `${DB_MAIN}`;
+DROP TABLE IF EXISTS `AxisProfile`;
+
+CREATE TABLE IF NOT EXISTS `AxisProfile`
+(
+    Id INT UNSIGNED AUTO_INCREMENT NOT NULL,
+    AxisId INT UNSIGNED NOT NULL,
+    `Level1` DECIMAL(16,3) NOT NULL,
+    `Level2` DECIMAL(16,3) NOT NULL,
+    `Level3` DECIMAL(16,3) NOT NULL,
+    `Level4` DECIMAL(16,3) NOT NULL,
+    PRIMARY KEY (Id)
+)
+ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+ALTER TABLE AxisProfile
+ADD CONSTRAINT AxisProfile_AxisId_fk 
+FOREIGN KEY (AxisId) REFERENCES Axis(Id);
+
+INSERT INTO AxisProfile(AxisId, Level1, Level2, Level3, Level4)
+SELECT DISTINCT Id, X, X, Y, Y
+FROM 
+Axis WHERE AxisTypeId = 10 OR AxisTypeId = 20;
+
+ALTER TABLE Predictive
+ADD Consistency NVARCHAR(256) DEFAULT '';

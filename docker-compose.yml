@@ -1,0 +1,87 @@
+# docker-compose.yml
+version: '3'
+services:
+  worker:
+      build: .
+      networks:
+        su-net:
+          ipv4_address: 192.168.5.4
+      environment:
+        - DB_USER=root 
+        - DB_PASS=devsecret 
+        - DB_CONFIG=Config
+        - DB_MAIN=Main
+        - DB_STAGE=Stage
+        - DB_HOST=mysql.server
+        - NODE_ENV=development
+      stdin_open: true
+      tty: true
+      volumes:
+        - ./:/usr/src
+        - ../dumps:/usr/dumps
+
+  webapp:
+    build:
+      context: ../MoneyManagerApp
+      dockerfile: Dockerfile
+    container_name: WebApp
+    ports:
+    - "8080:8080"
+    networks:
+      su-net:
+        ipv4_address: 192.168.5.3
+    links:
+    - mysql.server
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../MoneyManagerApp:/usr/src/app
+
+  api:
+    build:
+      context: ../MoneyManagerApi
+      dockerfile: Dockerfile
+    container_name: api
+    depends_on:
+      - mysql.server
+    ports:
+    - "3080:80"
+    environment:
+      - DB_USER=root 
+      - DB_PASS=devsecret 
+      - DB_CONFIG=Config
+      - DB_MAIN=Main
+      - DB_STAGE=Stage
+      - DB_HOST=mysql.server
+      - NODE_ENV=development
+    networks:
+      su-net:
+        ipv4_address: 192.168.5.6
+    links:
+    - mysql.server
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../MoneyManagerApi:/usr/src/app
+
+  mysql.server:
+    image: mysql/mysql-server:5.7
+    environment:
+      - TZ=UTC 
+      - MYSQL_ROOT_PASSWORD=devsecret 
+      - MYSQL_ROOT_HOST=%
+    ports:
+    - "3306:3306"
+    networks:
+      su-net:
+        ipv4_address: 192.168.5.2
+    volumes:
+        - su-db-data:/var/lib/mysql
+networks:
+  su-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.5.0/24
+volumes:
+  su-db-data:
